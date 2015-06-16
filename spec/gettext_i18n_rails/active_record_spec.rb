@@ -30,8 +30,13 @@ describe ActiveRecord::Base do
     end
 
     it "translates attributes of concrete children of abstract parent classes" do
-      ConcreteChildClass.should_receive(:s_).with('AbstractParentClass|Child attribute').and_return('Kinderattribut')
+      ConcreteChildClass.should_receive(:s_).with('ConcreteChildClass|Child attribute').and_return('Kinderattribut')
       ConcreteChildClass.human_attribute_name(:child_attribute).should == 'Kinderattribut'
+    end
+
+    it "translates attribute accessors of children using children's class as the namescope of the key" do
+      StiChild.should_receive(:s_).with('StiChild|An accessor').and_return('An accessor')
+      StiChild.human_attribute_name(:an_accessor).should == 'An accessor'
     end
   end
 

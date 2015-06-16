@@ -97,7 +97,9 @@ class Part < ActiveRecord::Base
 end
 
 class StiParent < ActiveRecord::Base; end
-class StiChild < StiParent; end
+class StiChild < StiParent
+  attr_accessor :an_accessor
+end
 
 class AbstractParentClass < ActiveRecord::Base
   self.abstract_class = true

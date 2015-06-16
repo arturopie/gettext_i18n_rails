@@ -10,14 +10,22 @@ module ActiveModel
       if attribute.ends_with?('_id')
         humanize_class_name(attribute)
       else
-        "#{inheritance_tree_root(self)}|#{attribute.split('.').map! {|a| a.humanize }.join('|')}"
+        "#{owner_in_class_hierarchy(attribute)}|#{attribute.split('.').map! {|a| a.humanize }.join('|')}"
       end
     end
 
-    def inheritance_tree_root(aclass)
-      return aclass unless aclass.respond_to?(:base_class)
-      base = aclass.base_class
-      base.superclass.abstract_class? ? base.superclass : base
+    def owner_in_class_hierarchy(attribute)
+      superclass = self.superclass
+
+      if superclass.class_has_attribute?(attribute)
+        superclass.owner_in_class_hierarchy(attribute)
+      else
+        self
+      end
+    end
+
+    def class_has_attribute?(attribute)
+      self != ActiveRecord::Base && !self.abstract_class? && self.column_names.include?(attribute)
     end
 
     def humanize_class_name(name=nil)
